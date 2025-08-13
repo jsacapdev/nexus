@@ -1,0 +1,45 @@
+@key = 
+@bearer_token = 
+
+### apim echo api
+POST https://apim-nexus-westeu-dev-01.azure-api.net/echo/resource HTTP/1.1
+Host: apim-nexus-westeu-dev-01.azure-api.net
+Content-Type: application/json
+Ocp-Apim-Subscription-Key: {{key}}
+
+{
+	"vehicleType": "train",
+	"maxSpeed": 125,
+	"avgSpeed": 90,
+	"speedUnit": "mph"
+}
+
+### direct to service bus
+POST https://sb-nexus-westeu-dev-01.servicebus.windows.net/nexus001/messages?api-version=2015-01 HTTP/1.1
+Authorization: Bearer {{bearer_token}}
+Content-Type: application/atom+xml;type=entry;charset=utf-8
+Host: sb-nexus-westeu-dev-01.servicebus.windows.net
+
+[
+  {
+    "firstName": "John",
+    "lastName": "Doe",
+    "age": 25,
+    "email": "some.jo@mail.com"
+  }
+]
+
+###
+POST https://apim-nexus-westeu-dev-01.azure-api.net/person-schema-validation/nexus001/messages HTTP/1.1
+Host: apim-nexus-westeu-dev-01.azure-api.net
+Content-Type: application/json
+Subscription-Key-Header-Name: {{key}}
+
+[
+  {
+    "firstName": "John",
+    "lastName": "Doe",
+    "age": 25,
+    "email": "some.jo@mail.com"
+  }
+]
