@@ -1,0 +1,50 @@
+<!--
+    - Policies are applied in the order they appear.
+    - Position <base/> inside a section to inherit policies from the outer scope.
+    - Comments within policies are not preserved.
+-->
+<!-- Add policies as children to the <inbound>, <outbound>, <backend>, and <on-error> elements -->
+<policies>
+    <!-- Throttle, authorize, validate, cache, or transform the requests -->
+    <inbound>
+        <base />
+        <set-variable name="correlationId" value="@{
+        var incoming = context.Request.Headers.GetValueOrDefault("x-correlation-id", string.Empty);
+        return string.IsNullOrEmpty(incoming) ? Guid.NewGuid().ToString() : incoming;
+        }" />
+        <set-header name="x-ms-blob-type" exists-action="override">
+            <value>BlockBlob</value>
+        </set-header>
+        <set-header name="x-ms-date" exists-action="override">
+            <value>@(DateTime.UtcNow.ToString("R"))</value>
+        </set-header>
+        <set-header name="x-ms-version" exists-action="override">
+            <value>2020-10-02</value>
+        </set-header>
+        <authentication-managed-identity resource="https://storage.azure.com" />
+        <set-header name="BrokerProperties" exists-action="override">
+            <value>@(String.Format("{{\"CorrelationId\":\"{0}\"}}", (string)context.Variables["correlationId"]))</value>
+        </set-header>
+        <set-header name="x-correlation-id" exists-action="override">
+            <value>@((string)context.Variables["correlationId"])</value>
+        </set-header>
+    </inbound>
+    <!-- Control if and how the requests are forwarded to services  -->
+    <backend>
+        <base />
+    </backend>
+    <!-- Customize the responses -->
+    <outbound>
+        <set-header name="x-correlation-id" exists-action="override">
+            <value>@((string)context.Variables["correlationId"])</value>
+        </set-header>
+        <base />
+    </outbound>
+    <!-- Handle exceptions and customize error responses  -->
+    <on-error>
+        <set-header name="x-correlation-id" exists-action="override">
+            <value>@((string)context.Variables["correlationId"])</value>
+        </set-header>
+        <base />
+    </on-error>
+</policies>

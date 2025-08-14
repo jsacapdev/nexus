@@ -1,4 +1,5 @@
 @bearer_token = 
+@key = 
 
 ### put using managed identity (oauth2)
 PUT https://stnexusdev11.blob.core.windows.net/landing/{{$guid}}.json HTTP/1.1
@@ -18,3 +19,15 @@ Authorization: Bearer {{bearer_token}}
 GET https://stnexusdev11.blob.core.windows.net/landing/3a359627-bf29-4300-adb3-bfc8691e03bb.json HTTP/1.1
 x-ms-version: 2018-03-28
 Authorization: Bearer {{bearer_token}}
+
+###
+PUT https://apim-nexus-westeu-dev-01.azure-api.net/blob-api/put/{{$guid}}.json HTTP/1.1
+Host: apim-nexus-westeu-dev-01.azure-api.net
+Subscription-Key-Header-Name: {{key}}
+
+{
+	"vehicleType": "train",
+	"maxSpeed": 125,
+	"avgSpeed": 90,
+	"speedUnit": "mph"
+}

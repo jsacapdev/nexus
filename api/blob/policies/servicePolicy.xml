@@ -1,0 +1,19 @@
+<!-- All operations-->
+<policies>
+    <inbound>
+        <base />
+        <set-backend-service base-url="{0}{1}" />
+        <set-header name="Content-Type" exists-action="override">
+            <value>application/json</value>
+        </set-header>
+    </inbound>
+    <backend>
+        <base />
+    </backend>
+    <outbound>
+        <base />
+    </outbound>
+    <on-error>
+        <base />
+    </on-error>
+</policies>
