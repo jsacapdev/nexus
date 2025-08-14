@@ -46,11 +46,14 @@ var policySchema = '''
 <policies>
     <!-- Throttle, authorize, validate, cache, or transform the requests -->
     <inbound>
-
         <!-- Validation -->
         {0}
+        <!-- Get Headers -->
+        {4}
         <!-- Authorization -->
         {1}
+        {2}
+        {3}
         <base />
     </inbound>
     <!-- Control if and how the requests are forwarded to services  -->
@@ -59,10 +62,12 @@ var policySchema = '''
     </backend>
     <!-- Customize the responses -->
     <outbound>
+        {3}
         <base />
     </outbound>
     <!-- Handle exceptions and customize error responses  -->
     <on-error>
+        {3}
         <base />
     </on-error>
 </policies>
@@ -87,7 +92,34 @@ var authorizationPolicy = '''
         </set-header>
 '''
 
-var personPolicy = format(policySchema, validatePersonPolicy, authorizationPolicy)
+var getCorrelationIdPolicy = '''
+        <!-- Generate (or reuse) correlation ID -->
+        <set-variable name="correlationId" value="@{
+        var incoming = context.Request.Headers.GetValueOrDefault("x-correlation-id", string.Empty);
+        return string.IsNullOrEmpty(incoming) ? Guid.NewGuid().ToString() : incoming;
+        }" />
+'''
+
+var setBrokerPropertiesHeader = '''
+        <set-header name="BrokerProperties" exists-action="override">
+            <value>@(String.Format("{{\"CorrelationId\":\"{0}\"}}", (string)context.Variables["correlationId"]))</value>
+        </set-header>
+'''
+
+var setCorrelationIdHeader = '''
+        <set-header name="x-correlation-id" exists-action="override">
+            <value>@((string)context.Variables["correlationId"])</value>
+        </set-header>
+'''
+
+var personPolicy = format(
+  policySchema,
+  validatePersonPolicy,
+  authorizationPolicy,
+  setBrokerPropertiesHeader,
+  setCorrelationIdHeader,
+  getCorrelationIdPolicy
+)
 
 resource apim 'Microsoft.ApiManagement/service@2021-08-01' existing = {
   name: apiManagementName
