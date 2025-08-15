@@ -2,6 +2,8 @@ targetScope = 'subscription'
 
 param deploymentLocation string
 
+param secondaryDeploymentLocation string
+
 param deploymentEnvironment string
 
 param resourceGroupName string
@@ -25,36 +27,15 @@ module resourceGroup 'br/public:avm/res/resources/resource-group:0.2.3' = {
   }
 }
 
-module serviceBusNamespace 'br/public:avm/res/service-bus/namespace:0.15.0' = {
-  name: 'serviceBusNamespace'
+module serviceBusNamespace './modules/servicebus.bicep' = {
+  name: serviceBusNamespaceName
   scope: az.resourceGroup(resourceGroupName)
   params: {
-    name: serviceBusNamespaceName
-    tags: tags
-    location: deploymentLocation
-    managedIdentities: {
-      systemAssigned: true
-    }
-    publicNetworkAccess: 'Enabled'
-    skuObject: {
-      capacity: 1
-      name: 'Standard'
-    }
-    disableLocalAuth: false
-    topics: [
-      {
-        name: 'nexus001'
-        subscriptions: [
-          {
-            name: 'sub001'
-          }
-        ]
-      }
-    ]
+    deploymentLocation: deploymentLocation
+    secondaryDeploymentLocation: secondaryDeploymentLocation
+    deploymentEnvironment: 'dev'
+    serviceBusNamespaceName: serviceBusNamespaceName
   }
-  dependsOn: [
-    resourceGroup
-  ]
 }
 
 module apim 'br/public:avm/res/api-management/service:0.6.0' = {

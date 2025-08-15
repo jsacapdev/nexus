@@ -2,6 +2,8 @@ using '../main.bicep'
 
 param deploymentLocation = 'westeurope'
 
+param secondaryDeploymentLocation = 'northeurope'
+
 param deploymentEnvironment = 'dev'
 
 param resourceGroupName = 'rg-nexus-westeu-dev-01'
