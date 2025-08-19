@@ -1,0 +1,47 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/dotnet
+{
+  "name": "bicep",
+  "dockerComposeFile": "docker-compose.yaml",
+  "service": "infra",
+  "workspaceFolder": "/workspace",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "pwsh",
+        "terminal.integrated.profiles.linux": {
+          "pwsh": {
+            "path": "/usr/bin/pwsh"
+          }
+        }
+      },
+      "extensions": [
+        "ms-vscode.powershell",
+        "GitHub.vscode-pull-request-github",
+        "github.vscode-github-actions",
+        "bewhite.psrule-vscode",
+        "davidanson.vscode-markdownlint",
+        "streetsidesoftware.code-spell-checker",
+        "eamodio.gitlens",
+        "ms-sarifvscode.sarif-viewer",
+        "github.vscode-github-actions",
+        "github.copilot",
+        "github.copilot-chat"
+      ]
+    }
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers/features/azure-cli:1": {
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers/features/terraform:1": {
+      "version": "latest"
+    }
+  },
+  "onCreateCommand": "sudo apt-get update -y && sudo apt-get upgrade -y && sudo chown -R vscode:vscode /usr/bin/pwsh",
+  "updateContentCommand": "/usr/bin/pwsh -f .devcontainer/container-build.ps1",
+  "postStartCommand": "/usr/bin/pwsh -f .devcontainer/container-start.ps1"
+}

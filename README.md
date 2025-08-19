@@ -29,3 +29,9 @@ To get the token using the Azure CLI:
 `az account get-access-token --resource https://storage.azure.com/ --query accessToken -o tsv`
 
 And set the `Storage Blob Data Owner` permissions on the storage account for the client identity.
+
+##
+
+``` pwsh
+Connect-AzAccount -DeviceCode
+```
