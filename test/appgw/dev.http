@@ -1,0 +1,21 @@
+@key = 
+
+###
+GET https://api.nexus.net/status-0123456789abcdef HTTP/1.1
+
+###
+GET https://api.nexus.net/echo/resource?param1=sample HTTP/1.1
+Host: api.nexus.net
+Ocp-Apim-Subscription-Key: {{key}}
+
+###
+PUT https://api.nexus.net/blob-api/put/{{$guid}}.json HTTP/1.1
+Host: api.nexus.net
+Subscription-Key-Header-Name: {{key}}
+
+{
+	"vehicleType": "train",
+	"maxSpeed": 125,
+	"avgSpeed": 90,
+	"speedUnit": "mph"
+}
